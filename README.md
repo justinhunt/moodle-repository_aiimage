@@ -37,4 +37,6 @@ It will work with the Moodle AI subsystem provider (OpenAI, Gemini etc) or with 
 6. Choose to "overwrite" the existing image or accept the renamed version to keep both images.
 
 ## Support
-At the time of writing (November 2025) the plugin is still early stage. But contact us via https://support.poodll.com if you need help.
+At the time of writing (November 2025) the plugin is still early stage. [More documentation is available here.](https://support.poodll.com/support/solutions/folders/19000177907). 
+
+Contact us via https://support.poodll.com if you need help.
