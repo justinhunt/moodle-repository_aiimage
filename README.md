@@ -13,7 +13,7 @@ It will work with the Moodle AI subsystem provider (OpenAI, Gemini etc) or with 
 2. Place the `aiimage` folder in the `repository` directory of your Moodle installation.
 3. Navigate to the Site administration > Notifications page in Moodle to complete the installation.
 4. Configure the plugin settings by going to Site administration > Plugins > Repositories > Manage Repositories. There set "AI Image" to "Enabled and Visible." This will take you to the settings page.
-5. On the settings page you will need choose your AI provider.
+5. On the settings page choose your AI provider.
 
 ## Usage
 

@@ -403,7 +403,7 @@ class imagegen
 
     public function call_ai_provider_edit_image($prompt, $draftid, $file, $filename) {
         global $CFG, $USER;
-        require_once($CFG->dirroot . '/repository/aiimage/aiimplemetation/core_ai/aiactions/edit_image.php');
+        require_once($CFG->dirroot . '/repository/aiimage/aiimplementation/core_ai/aiactions/edit_image.php');
         $context = \context_system::instance();
         $actionclass = \core_ai\aiactions\generate_image::class;
         $providerid = $this->conf->apiprovider ?? constants::CLOUDPOODLL_OPTION;
@@ -421,7 +421,7 @@ class imagegen
                 );
 
             if ($providerenabled) {
-                require_once($CFG->dirroot . '/repository/aiimage/aiimplemetation/'.$providerinstance->provider.'/process_edit_image.php');
+                require_once($CFG->dirroot . '/repository/aiimage/aiimplementation/'.$providerinstance->provider.'/process_edit_image.php');
                 // Prepare the action.
                 $paramstructure = [
                     'contextid' => $context->id,
