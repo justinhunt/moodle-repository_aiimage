@@ -40,3 +40,6 @@ It will work with the Moodle AI subsystem provider (OpenAI, Gemini etc) or with 
 At the time of writing (November 2025) the plugin is still early stage. [More documentation is available here.](https://support.poodll.com/support/solutions/folders/19000177907). 
 
 Contact us via https://support.poodll.com if you need help.
+
+### Credits
+The AI Image repository was a joint project between [Poodll](https://poodll.com) and [Treesha InfoTech](https://www.treeshainfotech.com/)
