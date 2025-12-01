@@ -6,7 +6,7 @@ div.repository_aiimage div.fp-content:has(div.fp-error.nofilesavailable) {
     display: none;
 }
 
-.repository_aiimage .fp-navbar:has(.fp-tb-search:not(.disabled))+.fp-content {
+.repository_aiimage .fp-navbar:has(.fp-tb-search:not(.disabled)) + .fp-content {
     height: 100px;
 }
 
@@ -123,7 +123,7 @@ div.repository_aiimage div.fp-content:has(div.fp-error.nofilesavailable) {
 
 .repo-cp-radio span.repo-cp-radio-thumb,
 .repo-cp-radio span.repo-cp-radio-noimage {
-    padding-left: 10px
+    padding-left: 10px;
 }
 
 .repository_aiimage .repo-cp-image-list .repo-cp-radio input[name="selectedimage"]:focus {

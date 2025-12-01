@@ -16,8 +16,6 @@
 
 namespace repository_aiimage;
 
-defined('MOODLE_INTERNAL') || die();
-
 use repository_aiimage\constants;
 use repository_aiimage\utils;
 use stored_file;
@@ -29,9 +27,7 @@ use stored_file;
  * @copyright  2025 Justin Hunt <justin@poodll.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class imagegen
-{
-
+class imagegen {
     /**
      * @var bool|object
      */
@@ -40,19 +36,18 @@ class imagegen
     /**
      * imagegen constructor.
      */
-    function __construct()
-    {
+    public function __construct() {
         global $DB;
         $this->conf = get_config(constants::M_SHORTNAME);
     }
 
 
     /**
+     * make image smaller
      * @param string $imagedata
      * @return string
      */
-    public function make_image_smaller($imagedata)
-    {
+    public function make_image_smaller($imagedata) {
         global $CFG;
         require_once($CFG->libdir . '/gdlib.php');
 
@@ -60,20 +55,20 @@ class imagegen
             return $imagedata;
         }
 
-        // Create temporary files for resizing
+        // Create temporary files for resizing.
         $randomid = uniqid();
         $temporiginal = $CFG->tempdir . '/aigen_orig_' . $randomid;
         file_put_contents($temporiginal, $imagedata);
 
-        // Resize to reasonable dimensions
+        // Resize to reasonable dimensions.
         $resizedimagedata = \resize_image($temporiginal, 500, 500, true);
 
         if (!$resizedimagedata) {
-            // If resizing fails, use the original image data
+            // If resizing fails, use the original image data.
             $resizedimagedata = $imagedata;
         }
 
-        // Clean up temporary file
+        // Clean up temporary file.
         if (file_exists($temporiginal)) {
             unlink($temporiginal);
         }
@@ -81,7 +76,7 @@ class imagegen
         return $resizedimagedata;
     }
 
-    /*
+    /**
      * Generates structured data using the CloudPoodll service.
      *
      * @param string $prompt The prompt to generate data for.
@@ -90,8 +85,7 @@ class imagegen
      * @param string $filename The desired filename for the new draft file.
      * @return array|false Returns an array with draft file URL, draft item ID, term ID, and base64 data, or false on failure.
      */
-    public function edit_image($prompt, $draftid, $file, $filename)
-    {
+    public function edit_image($prompt, $draftid, $file, $filename) {
         $providerrespose = $this->call_ai_provider_edit_image($prompt, $draftid, $file, $filename);
         if (!is_null($providerrespose)) {
             return $providerrespose;
@@ -102,8 +96,8 @@ class imagegen
             $resp = utils::curl_fetch($url, $params, true);
             $base64data = $this->process_generate_image_response($resp);
             if ($base64data) {
-                // Generate draft file
-                $filerecord = $this->base64ToFile($base64data, $draftid, $filename);
+                // Generate draft file.
+                $filerecord = $this->base64tofile($base64data, $draftid, $filename);
                 if ($filerecord) {
                     $draftid = $filerecord['itemid'];
                     $draftfileurl = \moodle_url::make_draftfile_url(
@@ -122,7 +116,6 @@ class imagegen
             } else {
                 return false;
             }
-
         } else {
             return false;
         }
@@ -136,8 +129,7 @@ class imagegen
      * @param string $filename The desired filename for the new draft file.
      * @return array|false Returns an array with draft file URL, draft item ID, term ID, and base64 data, or false on failure.
      */
-    public function generate_image($prompt, $draftid, $filename)
-    {
+    public function generate_image($prompt, $draftid, $filename) {
         $providerrespose = $this->call_ai_provider_create_image($prompt, $draftid, $filename);
         if (!is_null($providerrespose)) {
             return $providerrespose;
@@ -148,8 +140,8 @@ class imagegen
             $resp = utils::curl_fetch($url, $params);
             $base64data = $this->process_generate_image_response($resp);
             if ($base64data) {
-                // Generate draft file
-                $filerecord = $this->base64ToFile($base64data, $draftid, $filename);
+                // Generate draft file.
+                $filerecord = $this->base64tofile($base64data, $draftid, $filename);
                 if ($filerecord) {
                     $draftid = $filerecord['itemid'];
                     $draftfileurl = \moodle_url::make_draftfile_url(
@@ -168,20 +160,19 @@ class imagegen
             } else {
                 return false;
             }
-
         } else {
             return false;
         }
     }
 
     /**
+     * convert to base64tofile
      * @param string $base64data
      * @param int $draftid
      * @param string $filename
      * @return array|false
      */
-    public function base64ToFile($base64data, $draftid, $filename)
-    {
+    public function base64tofile($base64data, $draftid, $filename) {
         global $USER;
 
         if (empty($base64data)) {
@@ -198,15 +189,14 @@ class imagegen
             'filepath' => '/',
             'filename' => $filename,
         ];
-
-        // Create file content
+        // Create file content.
         $filecontent = base64_decode($base64data);
-        //Check its good file content
+        // Check its good file content.
         if (!$filecontent || !self::validate_image_content($filecontent)) {
             return false;
         }
         try {
-            // Check if the file already exists
+            // Check if the file already exists.
             $existingfile = $fs->get_file_by_hash(sha1($filecontent));
             if ($existingfile) {
                 return $filerecord;
@@ -219,26 +209,29 @@ class imagegen
                 }
             }
         } catch (\moodle_exception $e) {
-            return false; // Handle error "gracefully"
+            return false; // Handle error "gracefully".
         }
     }
-
-    // Validate base64 to be sure nothing sinister has arrived
+    /**
+     * Validate base64 to be sure nothing sinister has arrived
+     * @param mixed $filecontent
+     * @return bool
+     */
     private static function validate_image_content($filecontent) {
-        // Check if it's actually an image
+        // Check if it's actually an image.
         $imageinfo = getimagesizefromstring($filecontent);
         return $imageinfo !== false && in_array($imageinfo[2], [IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_WEBP]);
     }
 
 
     /**
+     * prepare edit image
      * @param string $prompt
      * @param stored_file $file
      * @param string|null $token
      * @return array|false
      */
-    public function prepare_edit_image_payload($prompt, $file, $token = null)
-    {
+    public function prepare_edit_image_payload($prompt, $file, $token = null) {
         global $USER;
 
         if (!empty($this->conf->apiuser) && !empty($this->conf->apisecret)) {
@@ -252,7 +245,7 @@ class imagegen
                 return false;
             }
 
-            // Fetch base64 data from the storedfile
+            // Fetch base64 data from the storedfile.
             $filecontent = $file->get_content();
             $base64data = base64_encode($filecontent);
             if (!$base64data) {
@@ -271,19 +264,18 @@ class imagegen
             $params['owner'] = hash('md5', $USER->username);
 
             return $params;
-
         } else {
             return false;
         }
     }
 
     /**
+     * prepare generate image
      * @param string $prompt
      * @param string|null $token
      * @return array|false
      */
-    public function prepare_generate_image_payload($prompt, $token = null)
-    {
+    public function prepare_generate_image_payload($prompt, $token = null) {
         global $USER;
 
         if (!empty($this->conf->apiuser) && !empty($this->conf->apisecret)) {
@@ -306,18 +298,17 @@ class imagegen
             $params['owner'] = hash('md5', $USER->username);
 
             return $params;
-
         } else {
             return false;
         }
     }
 
     /**
+     * process generate image
      * @param string $resp
      * @return string|null
      */
-    public function process_generate_image_response($resp)
-    {
+    public function process_generate_image_response($resp) {
         $respobj = json_decode($resp);
         $ret = new \stdClass();
         if (isset($respobj->returnCode)) {
@@ -341,7 +332,7 @@ class imagegen
                 // If the payload has a base64 encoded image, use that.
                 $rawbase64data = $ret->payload[0]->b64_json;
                 $rawdata = base64_decode($rawbase64data);
-                //Check its good image data
+                // Check its good image data.
                 if (!$rawdata || !self::validate_image_content($rawdata)) {
                     return false;
                 }
@@ -354,6 +345,7 @@ class imagegen
     }
 
     /**
+     * check edit image or not
      * @return bool
      */
     public function can_edit_image() {
@@ -374,11 +366,12 @@ class imagegen
         $providernamearr = explode('_', $providerinstance->provider, 2);
         $providername = array_pop($providernamearr);
         return in_array(strtolower($providername), [
-            'gemini'
+            'gemini',
         ]);
     }
 
     /**
+     * provider for create image
      * @param string $prompt
      * @param int $draftid
      * @param string $filename
@@ -444,6 +437,7 @@ class imagegen
     }
 
     /**
+     * provider for edit image
      * @param string $prompt
      * @param int $draftid
      * @param stored_file $file
@@ -470,7 +464,8 @@ class imagegen
                 );
 
             if ($providerenabled) {
-                require_once($CFG->dirroot . '/repository/aiimage/aiimplementation/'.$providerinstance->provider.'/process_edit_image.php');
+                require_once($CFG->dirroot . '/repository/aiimage/aiimplementation/' .
+                    $providerinstance->provider . '/process_edit_image.php');
                 // Prepare the action.
                 $paramstructure = [
                     'contextid' => $context->id,
@@ -488,7 +483,7 @@ class imagegen
                     aspectratio: $paramstructure['aspectratio'],
                     numimages: $paramstructure['numimages'],
                     style: $paramstructure['style'],
-                    stored_file: $file
+                    storedfile: $file
                 );
 
                 $reflclass = new \ReflectionClass($manager);
@@ -525,14 +520,13 @@ class imagegen
         if (empty($draftfile)) {
             return false;
         }
-        /** @var \stored_file $draftfile */
         $smallerdata = $this->make_image_smaller($draftfile->get_content());
         $base64data = base64_encode($smallerdata);
         if (empty($base64data)) {
             return false;
         }
-        // Generate draft file
-        $filerecord = $this->base64ToFile($base64data, $draftid, $filename);
+        // Generate draft file.
+        $filerecord = $this->base64tofile($base64data, $draftid, $filename);
         if ($filerecord) {
             $draftid = $filerecord['itemid'];
             $draftfileurl = \moodle_url::make_draftfile_url(
@@ -550,5 +544,4 @@ class imagegen
         }
         return false;
     }
-
 }

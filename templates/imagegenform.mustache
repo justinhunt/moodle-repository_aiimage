@@ -18,20 +18,33 @@
     @template repository_aiimage/imagegenform
 
     Compact prompt + style selector + existing-image chooser used within the
-    Cloud Poodll repository login form. Expected context:
+    Cloud Poodll repository login form.
 
+    Example context (json):
     {
         "formid": "aiimage-imagegen",
         "action": "",
         "prompt": "",
-        "styles": [
-            {"value": "flat vector illustration", "label": "Flat vector illustration", "selected": true},
-            ...
+        "imagestyles": [
+            {
+                "value": "flat vector illustration",
+                "label": "Flat vector illustration",
+                "selected": true
+            }
         ],
         "images": [
-            {"id": "img1", "value": "https://...", "label": "cloudpoodll_123.png", "preview": "https://.../thumb", "selected": false},
-            ...
+            {
+                "id": "img1",
+                "value": "https://example.com/image1.png",
+                "title": "cloudpoodll_123.png",
+                "realthumbnail": "https://example.com/image1-thumb.png",
+                "selected": false
+            }
         ],
+        "showclearoption": true,
+        "nocurrent": false,
+        "canedit": true,
+        "sesskey": "example123"
     }
 }}
 

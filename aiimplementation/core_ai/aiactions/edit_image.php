@@ -16,12 +16,14 @@
 
 namespace core_ai\aiactions;
 
-require_once dirname(__FILE__) . '/responses/response_edit_image.php';
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__) . '/responses/response_edit_image.php');
 
 /**
  * Class edit_image
  *
- * @package    core_ai
+ * @package    repository_aiimage
  * @copyright  2025 Justin Hunt <justin@poodll.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +41,7 @@ class edit_image extends generate_image {
      * @param string $aspectratio The aspect ratio of the generated image.
      * @param int $numimages The number of images to generate.
      * @param string $style The visual style of the generated image.
-     * @param \stored_file $stored_file The file to edit.
+     * @param \stored_file $storedfile The file to edit.
      */
     public function __construct(
         int $contextid,
@@ -56,7 +58,7 @@ class edit_image extends generate_image {
         /** @var string The visual style of the generated image */
         protected string $style,
         /** @var \stored_file The file to edit */
-        protected \stored_file $stored_file
+        protected \stored_file $storedfile
     ) {
         base::__construct($contextid);
     }
@@ -66,7 +68,7 @@ class edit_image extends generate_image {
      * @return \stored_file
      */
     public function get_storedfile(): \stored_file {
-        return $this->stored_file;
+        return $this->storedfile;
     }
 
     /**
