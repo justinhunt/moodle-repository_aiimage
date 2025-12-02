@@ -16,7 +16,10 @@
 }}
 {{!
     @template repository_aiimage/managecreds
-    Simple template to manage credentials for the AI Image repository plugin. Expected context:
+
+    Simple template to manage credentials for the AI Image repository plugin.
+
+    Example context (json):
     {
         "apiuser": "testdevuser",
         "apisecret": "RQ6Sm3Ph1FsfHNipcdaTg",
@@ -33,14 +36,14 @@
 </div>
 {{^element.frozen}}
     {{#js}}
-        require(['jquery'],function($) {
-            //set up fetch from elsewhere
+        require(['jquery'], function($) {
+            // Set up fetch from elsewhere.
             $(".repository_aiimage_credsmanager .cloudpoodll_poke_creds").on("click", function() {
                 event.preventDefault();
                 var apiuser = document.getElementById('id_apiuser');
                 var apisecret = document.getElementById('id_apisecret');
-                apiuser.value='{{{apiuser}}}';
-                apisecret.value='{{{apisecret}}}';
+                apiuser.value = '{{{apiuser}}}';
+                apisecret.value = '{{{apisecret}}}';
             });
         });
     {{/js}}

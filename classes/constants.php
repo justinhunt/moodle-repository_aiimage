@@ -16,9 +16,6 @@
 
 namespace repository_aiimage;
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Class constants
  *
@@ -27,8 +24,9 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class constants {
-
-    // Component name, db tables, strings that are fixed and used around the plugin
+    /**
+     * Component name, db tables, strings that are fixed and used around the plugin
+     */
     const M_COMPONENT = 'repository_aiimage';
 
     /**

@@ -35,34 +35,33 @@ use repository_aiimage\imagegen;
 /**
  * Repository implementation for generating images from prompts.
  */
-class repository_aiimage extends repository
-{
-
+class repository_aiimage extends repository {
     /**
      * @var imagegen|null imagegen instance
      */
-    protected $_imagegen = null;
+    protected $imagegen = null;
 
     /**
      * Supported return types.
      * @return int
      */
-    public function supported_returntypes()
-    {
+    public function supported_returntypes() {
         return FILE_INTERNAL;
     }
 
-    public function supported_filetypes()
-    {
-        return array('web_image');
+    /**
+     *  Supported file types.
+     * @return string[]
+     */
+    public function supported_filetypes() {
+        return ['web_image'];
     }
 
     /**
      * Enable the global search (used here as a prompt input field).
      * @return bool
      */
-    public function global_search()
-    {
+    public function global_search() {
         return false; // Enables the search box used as prompt input.
     }
 
@@ -70,17 +69,21 @@ class repository_aiimage extends repository
      * Indicates this repository uses Moodle files (draft area).
      * @return bool
      */
-    public function has_moodle_files()
-    {
+    public function has_moodle_files() {
         return true;
     }
 
-    public function get_listing($path = '', $page = 0)
-    {
+    /**
+     * get listing
+     * @param mixed $path
+     * @param mixed $page
+     * @return array[]
+     */
+    public function get_listing($path = '', $page = 0) {
 
         global $USER, $OUTPUT;
 
-        // Empty List
+        // List.
         $list = [
             'list' => [],
             'manage' => false,
@@ -93,8 +96,11 @@ class repository_aiimage extends repository
         return $list;
     }
 
-    public function print_login()
-    {
+    /**
+     * Print the login form.
+     * @return string
+     */
+    public function print_login() {
         return $this->get_listing();
     }
 
@@ -104,8 +110,7 @@ class repository_aiimage extends repository
      * @param MoodleQuickForm $mform Moodle form (passed by reference)
      * @param string $classname repository class name
      */
-    public static function type_config_form($mform, $classname = 'repository')
-    {
+    public static function type_config_form($mform, $classname = 'repository') {
         global $CFG, $OUTPUT;
 
         parent::type_config_form($mform);
@@ -152,7 +157,7 @@ class repository_aiimage extends repository
         if (!empty($cloudpoodllapiuser) && !empty($cloudpoodllapisecret)) {
             $tokeninfo = utils::fetch_token_for_display($cloudpoodllapiuser, $cloudpoodllapisecret);
             $showbelowapisecret = $tokeninfo;
-            // if we have no API user and secret we show a "fetch from elsewhere on site" or "take a free trial" link
+            // If we have no API user and secret we show a "fetch from elsewhere on site" or "take a free trial" link.
         } else {
             $amddata = [];
             $cpcomponents = [
@@ -196,8 +201,6 @@ class repository_aiimage extends repository
             }
             $showbelowapisecret = $OUTPUT->render_from_template(constants::M_COMPONENT . '/managecreds', $amddata);
         }
-
-
         // Add a link to create a new Poodll account if the API user is not set.
         $mform->addElement(
             'static',
@@ -225,11 +228,9 @@ class repository_aiimage extends repository
 
     /**
      * Option names of AI Image plugin.
-     *
-     * @inheritDocs
+     * return []
      */
-    public static function get_type_option_names()
-    {
+    public static function get_type_option_names() {
         return [
             'apiprovider',
             'cloudpoodllserver',
@@ -244,8 +245,7 @@ class repository_aiimage extends repository
      * Render the search (prompt) input box.
      * @return string
      */
-    public function print_search()
-    {
+    public function print_search() {
         global $OUTPUT;
 
         $currentprompt = optional_param('s', '', PARAM_TEXT);
@@ -282,7 +282,7 @@ class repository_aiimage extends repository
             'showclearoption' => !empty($imagelist),
             'nocurrent' => ($currentimage === ''),
             'canedit' => $canedit,
-            'sesskey' => sesskey()
+            'sesskey' => sesskey(),
         ];
 
         $out = html_writer::start_div('repository_aiimage_image_prompt_wrapper');
@@ -292,18 +292,21 @@ class repository_aiimage extends repository
     }
 
     /**
+     * Get the imagegen instance.
      * @return imagegen
      */
-    public function get_imagegen()
-    {
-        if (!isset($this->_imagegen)) {
-            $this->_imagegen = new imagegen($this);
+    public function get_imagegen() {
+        if (!isset($this->imagegen)) {
+            $this->imagegen = new imagegen($this);
         }
-        return $this->_imagegen;
+        return $this->imagegen;
     }
 
-    public function can_edit_image()
-    {
+    /**
+     * Check if the user can edit the image.
+     * @return bool
+     */
+    public function can_edit_image() {
         return $this->get_imagegen()->can_edit_image();
     }
 
@@ -313,8 +316,7 @@ class repository_aiimage extends repository
      * @param int $page
      * @return array
      */
-    public function search($searchtext, $page = 0)
-    {
+    public function search($searchtext, $page = 0) {
         global $USER;
 
         // Default results structure.
@@ -340,7 +342,7 @@ class repository_aiimage extends repository
         $selectedimagefilename = optional_param('selectedimage', '', PARAM_TEXT);
         if (!empty($selectedimagefilename) && $this->can_edit_image()) {
             $selectedimage = $this->fetch_file_by_filename($selectedimagefilename);
-            // If this fails that is bad, so just return no results
+            // If this fails that is bad, so just return no results.
             if (!$selectedimage) {
                 return $results;
             }
@@ -357,7 +359,6 @@ class repository_aiimage extends repository
                 $selectedimage,
                 $selectedimagefilename
             );
-
         } else {
             $prompt = $prompt . '[NB The image style is: ' . $imagetype . ']';
             $filename = 'imagegen_' . time() . '.png';
@@ -406,16 +407,36 @@ class repository_aiimage extends repository
      * Fetch available image style options.
      * @return array
      */
-    public function fetch_image_options()
-    {
+    public function fetch_image_options() {
         return [
-            (object) ['value' => 'flat vector illustration', 'label' => get_string('imagetype_flatvectorillustration', constants::M_COMPONENT)],
-            (object) ['value' => 'cartoon', 'label' => get_string('imagetype_cartoon', constants::M_COMPONENT)],
-            (object) ['value' => 'photorealistic', 'label' => get_string('imagetype_photorealistic', constants::M_COMPONENT)],
-            (object) ['value' => 'digital painting', 'label' => get_string('imagetype_digitalpainting', constants::M_COMPONENT)],
-            (object) ['value' => 'line drawing', 'label' => get_string('imagetype_linedrawing', constants::M_COMPONENT)],
-            (object) ['value' => '3d render', 'label' => get_string('imagetype_3drender', constants::M_COMPONENT)],
-            (object) ['value' => 'infographic', 'label' => get_string('imagetype_infographic', constants::M_COMPONENT)],
+            (object) [
+                'value' => 'flat vector illustration',
+                'label' => get_string('imagetype_flatvectorillustration', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => 'cartoon',
+                'label' => get_string('imagetype_cartoon', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => 'photorealistic',
+                'label' => get_string('imagetype_photorealistic', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => 'digital painting',
+                'label' => get_string('imagetype_digitalpainting', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => 'line drawing',
+                'label' => get_string('imagetype_linedrawing', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => '3d render',
+                 'label' => get_string('imagetype_3drender', constants::M_COMPONENT),
+            ],
+            (object) [
+                'value' => 'infographic',
+                'label' => get_string('imagetype_infographic', constants::M_COMPONENT),
+            ],
         ];
     }
 
@@ -423,9 +444,8 @@ class repository_aiimage extends repository
      * Fetch a file by filename from user draft area.
      * @param string $filename
      * @return \stored_file|null
-    */
-    public function fetch_file_by_filename($filename)
-    {
+     */
+    public function fetch_file_by_filename($filename) {
         global $USER, $OUTPUT;
 
         $itemid = optional_param('itemid', 0, PARAM_INT);
@@ -447,8 +467,7 @@ class repository_aiimage extends repository
      * Fetch the list of existing mages from user draft area.
      * @return array
      */
-    public function fetch_files_list()
-    {
+    public function fetch_files_list() {
         global $USER, $OUTPUT;
 
         $result = [
@@ -478,13 +497,11 @@ class repository_aiimage extends repository
                 continue;
             }
 
-            // continue if the file extension is not png / jpeg / jpg /webp
+            // Continue if the file extension is not png / jpeg / jpg /webp.
             $extension = strtolower(pathinfo($file->get_filename(), PATHINFO_EXTENSION));
             if (!in_array($extension, ['png', 'jpeg', 'jpg', 'webp'])) {
                 continue;
             }
-
-
             $fileurl = moodle_url::make_draftfile_url($itemid, $file->get_filepath(), $file->get_filename());
             $entry = [
                 'title' => $file->get_filename(),
@@ -508,8 +525,7 @@ class repository_aiimage extends repository
      * No specific init needed.
      * @return bool
      */
-    public static function plugin_init()
-    {
+    public static function plugin_init() {
         return true;
     }
 
@@ -517,8 +533,7 @@ class repository_aiimage extends repository
      * No external auth required.
      * @return bool
      */
-    public function check_login()
-    {
+    public function check_login() {
         return true; // False shows print_login form.
     }
 }

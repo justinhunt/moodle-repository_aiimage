@@ -21,12 +21,11 @@ use core_ai\aiactions\responses\response_generate_image;
 /**
  * Class response_edit_image
  *
- * @package    core_ai
+ * @package    repository_aiimage
  * @copyright  2025 Justin Hunt <justin@poodll.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class response_edit_image extends response_generate_image {
-
     /**
      * Constructor.
      *
@@ -46,5 +45,4 @@ class response_edit_image extends response_generate_image {
             errormessage: $errormessage,
         );
     }
-
 }
