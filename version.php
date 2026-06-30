@@ -28,4 +28,4 @@ $plugin->component = 'repository_aiimage';
 $plugin->version   = 2026063000;
 $plugin->requires  = 2022041900;
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.2';
+$plugin->release   = '1.0.3';
