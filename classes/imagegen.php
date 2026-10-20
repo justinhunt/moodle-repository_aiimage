@@ -422,7 +422,22 @@ class imagegen {
         }
 
         $providerinstance = $result['provider'];
-        return strpos($providerinstance->get_name(), 'gemini') !== false;
+        $name = $providerinstance->get_name();
+        if (strpos($name, 'gemini') !== false) {
+            return true;
+        }
+        // OpenAI edits with the GPT Image model chosen in the repository settings.
+        // Editing from a text prompt alone needs GPT Image 2 or later.
+        if (strpos($name, 'openai') !== false) {
+            $model = $this->conf->openaieditmodel ?? '';
+            if (empty($model)) {
+                $model = 'gpt-image-2.5-flare';
+            }
+            if (preg_match('/^gpt-image-(\d+(\.\d+)?)/', $model, $matches)) {
+                return (float) $matches[1] >= 2;
+            }
+        }
+        return false;
     }
 
     /**

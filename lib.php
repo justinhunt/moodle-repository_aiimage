@@ -152,6 +152,29 @@ class repository_aiimage extends repository {
         $mform->setDefault('apiprovider', constants::CLOUDPOODLL_OPTION);
         $mform->addHelpButton('apiprovider', 'apiprovider', constants::M_COMPONENT);
 
+        // Gemini model used for image editing (Nano Banana).
+        $geminimodels = [
+            'gemini-2.5-flash-image' => 'Nano Banana (gemini-2.5-flash-image)',
+            'gemini-3-pro-image-preview' => 'Nano Banana Pro (gemini-3-pro-image-preview)',
+            'gemini-3.1-flash-image-preview' => 'Nano Banana 2 (gemini-3.1-flash-image-preview)',
+            'gemini-nano-banana-2.1' => 'Nano Banana 2.1 (gemini-nano-banana-2.1)',
+        ];
+        $mform->addElement('select', 'geminieditmodel', get_string('geminieditmodel', constants::M_COMPONENT), $geminimodels);
+        $mform->setType('geminieditmodel', PARAM_TEXT);
+        $mform->setDefault('geminieditmodel', 'gemini-2.5-flash-image');
+        $mform->addHelpButton('geminieditmodel', 'geminieditmodel', constants::M_COMPONENT);
+
+        // OpenAI model used for image editing. Only the GPT Image models can edit from a prompt alone.
+        $openaimodels = [
+            'gpt-image-2.5-flare' => 'GPT Image 2.5 Flare (gpt-image-2.5-flare)',
+            'gpt-image-2.5-sunburst' => 'GPT Image 2.5 Sunburst (gpt-image-2.5-sunburst)',
+            'gpt-image-1.5' => 'GPT Image 1.5 (gpt-image-1.5)',
+        ];
+        $mform->addElement('select', 'openaieditmodel', get_string('openaieditmodel', constants::M_COMPONENT), $openaimodels);
+        $mform->setType('openaieditmodel', PARAM_TEXT);
+        $mform->setDefault('openaieditmodel', 'gpt-image-2.5-flare');
+        $mform->addHelpButton('openaieditmodel', 'openaieditmodel', constants::M_COMPONENT);
+
         // API User.
         $mform->addElement('text', 'apiuser', get_string('apiuser', constants::M_COMPONENT));
         $mform->setType('apiuser', PARAM_TEXT);
@@ -248,6 +271,8 @@ class repository_aiimage extends repository {
     public static function get_type_option_names() {
         return [
             'apiprovider',
+            'geminieditmodel',
+            'openaieditmodel',
             'cloudpoodllserver',
             'apiuser',
             'apisecret',

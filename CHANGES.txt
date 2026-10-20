@@ -1,3 +1,7 @@
+Version 1.0.4 (Build 2026102000)
+- Image editing with OpenAI (GPT Image 2 or later), with a setting to choose the model
+- Setting to choose the Gemini (Nano Banana) image editing model, including Nano Banana 2.1
+
 Version 1.0.3 (Build 2026063000)
 - Designating as STABLE
 
